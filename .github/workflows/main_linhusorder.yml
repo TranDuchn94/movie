@@ -49,5 +49,5 @@ jobs:
         with:
           app-name: 'linhUSorder'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_5374513E616D46709EB8A64418746A4A }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_415E931EBBFF49E39916B530E7D65AB8 }}
           package: '*.war'
