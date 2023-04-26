@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>seat-view</title>
+    <th:block th:insert="fragment/head" />
+    <link rel="stylesheet" th:href="@{/styles/animation.css}">
+</head>
+<body>
+<div class="container-scroller">
+    <!--pro-banner-->
+<!--    <th:block th:insert="fragment/probanner" />-->
+    <!--navbar-->
+    <th:block th:insert="fragment/navbar" />
+    <!--container-->
+    <div class="container-fluid page-body-wrapper">
+        <!--theme wrapper-->
+        <th:block th:insert="fragment/themewrapper" />
+        <!--right side bar-->
+        <th:block th:insert="fragment/rightsidebar" />
+        <!-- side bar offcanvas-->
+        <th:block th:insert="fragment/sidebaroffcanvas" />
+        <!-- main panel-->
+        <div class="main-panel">
+            <!--content-->
+            <div class="content-wrapper">
+                <!--row-->
+                <div class="row">
+                    <div class="col">
+                        <div class="home-tab">
+                            <!--tab list-->
+                            <th:block th:insert="fragment/tablist" />
+                            <div class="tab-content tab-content-basic">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">MANAGE SEATS OF ROOM</h4>
+                                        <!--    result action-->
+                                        <div onclick="display()" id="result" class="alert alert-success"
+                                             style="width: fit-content"
+                                             role="alert"
+                                             th:if="${result}"
+                                             th:text="${result}">
+                                        </div>
+
+                                        <div class="table-responsive">
+                                            <div>
+                                                <p th:if="${rooms != null && rooms.size() > 0}">Select city:</p>
+                                                <p th:if="${cities.size() == 0}" class="text-danger">Not have city information</p>
+                                                <select id="cities" >
+                                                    <option th:each="city : ${cities}" th:value="${city.cityId}" th:text="${city.cityName}" th:selected="${city.cityId == cityId}"></option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <p th:if="${rooms != null && rooms.size() > 0}">Select cinema:</p>
+                                                <p th:if="${cinemas != null && cinemas.size() == 0}" class="text-danger">Not have cinema information</p>
+                                                <select th:if="${cinemas !=null && cinemas.size() > 0}" id="cinemas" >
+                                                    <option th:each="cinema : ${cinemas}" th:value="${cinema.cinemaId}" th:text="${cinema.cinemaName}" th:selected="${cinema.cinemaId == cinemaId}"></option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <p th:if="${rooms != null && rooms.size() > 0}">Select room:</p>
+                                                <p th:if="${rooms != null && rooms.size() == 0}" class="text-danger">Not have room information</p>
+                                                <select th:if="${rooms != null && rooms.size() > 0}" id="rooms" >
+                                                    <option th:each="room : ${rooms}" th:value="${room.roomId}" th:text="${room.roomId}" th:selected="${room.roomId == roomId}"></option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!--footers-->
+            <th:block th:insert="fragment/footers" />
+
+        </div>
+        <!-- main panel ends -->
+    </div>
+    <!-- page body wrapper ends -->
+</div>
+<!-- container scroller -->
+
+<script th:inline="javascript">
+    const contextPath = /*[[@{/}]]*/ '';
+    const cinemas = document.getElementById("cinemas");
+    cinemas.addEventListener('change',(cinema)=>{
+        wi
+    })
+
+    const myTimeout = setTimeout(display, 5000);
+
+    function display(){
+        const x = document.getElementById("result");
+        if(x){
+            x.style.display = "none";
+        }
+    }
+
+    const alertDiv = document.getElementById('result');
+    alertDiv.style.animation = "slideDown 2s ease-in-out";
+
+    function confirmDelete(id){
+        const doc = document.getElementById("deleteConfirm");
+        doc.style.display='block';
+        doc.innerHTML=
+            `<div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Delete Confirm</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="displayNone()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-danger">Room will be Deleted</p>
+                        <p><b>ARE YOU SURE ?</b></p>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-success" >
+                        <a style="text-decoration: none; color: white" href="/manage-cinema/admin/room/delete/${id}">
+                            Confirm Delete
+                        </a>
+                    </button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="displayNone()">Close</button>
+                    </div>
+                </div>
+        </div>`
+    }
+    function displayNone(){
+        const doc = document.getElementById("deleteConfirm");
+        doc.style.display='none';
+    }
+</script>
+
+</body>
+
+</html>
+

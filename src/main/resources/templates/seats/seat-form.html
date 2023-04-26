@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:insert="fragment/head" />
+    <title>Seat form</title>
+    <style>
+        *{
+            box-sizing: border-box;
+        }
+        .normal{
+            background-color: green;
+        }
+        .vip{
+            background-color: gold;
+        }
+        .way{
+            background-color: white;
+        }
+        .broken{
+            background-color: black;
+        }
+        .love{
+            background-color: hotpink;
+        }
+        .button{
+            width: 50px;
+            height: 50px;
+            border:1px solid black;
+        }
+    </style>
+</head>
+<body>
+<div class="container-scroller">
+    <!--pro-banner-->
+<!--    <th:block th:insert="fragment/probanner" />-->
+    <!--navbar-->
+    <th:block th:insert="fragment/navbar" />
+    <!--container-->
+    <div class="container-fluid page-body-wrapper">
+        <!--theme wrapper-->
+        <th:block th:insert="fragment/themewrapper" />
+        <!--right side bar-->
+        <th:block th:insert="fragment/rightsidebar" />
+        <!-- side bar offcanvas-->
+        <th:block th:insert="fragment/sidebaroffcanvas" />
+        <!-- main panel-->
+        <div class="main-panel">
+            <!--content-->
+            <div class="content-wrapper">
+                <!--row-->
+                <div class="row">
+                    <div class="col grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="card-description">
+                                    Add Seat
+                                </p>
+
+                                <p>select type of seat:</p>
+                                <label for="normal">normal</label>
+                                <input name="choose" id="normal" type="radio" value="1" checked>
+                                <label for="vip">vip</label>
+                                <input name="choose" id="vip" type="radio" value="2">
+                                <label for="path">way</label>
+                                <input name="choose" id="path" type="radio" value="3">
+                                <label for="broken">broken</label>
+                                <input name="choose" id="broken" type="radio" value="4">
+                                <label for="love">fuck</label>
+                                <input name="choose" id="love" type="radio" value="5">
+
+                                <form th:action="@{${update != null ? '/admin/seat/update/'+ seatWrapper.getSeatDtoMCVList()[0].roomId
+                                                                    : '/admin/seat/add/'+ seatWrapper.getSeatDtoMCVList()[0].roomId}}" method="POST"
+                                        th:object="${seatWrapper}">
+                                    <div class="d-flex" th:each="i : ${#numbers.sequence(0,seatWrapper.getRow() - 1)}">
+                                        <div th:each="k : ${#numbers.sequence(0,seatWrapper.getColumn() - 1)}">
+
+                                            <button type="button" class="button"
+                                                    th:name="'seatDtoMCVList['+${i* seatWrapper.getColumn() + k}+'].typeSeatId'"
+                                                    th:value="*{seatDtoMCVList[__${i* seatWrapper.getColumn() + k}__].typeSeatId}"
+                                                    th:text="*{seatDtoMCVList[__${i * seatWrapper.getColumn() + k}__].seatName}
+                                                    ? *{seatDtoMCVList[__${i * seatWrapper.getColumn() + k}__].seatName}
+                                                    : ${#conversions.convert((65+i), 'java.lang.Character')}+${k + 1}">
+                                                <!--                                            convert number to Char -->
+                                            </button>
+
+                                            <input hidden
+                                                   th:id="'seatDtoMCVList['+${i* seatWrapper.getColumn() + k}+'].typeSeatId'"
+                                                   type="checkbox" th:name="'seatDtoMCVList['+${i* seatWrapper.getColumn() + k}+'].typeSeatId'" th:value="*{seatDtoMCVList[__${i * seatWrapper.getColumn() + k}__].typeSeatId}" checked/>
+                                            <input hidden type="checkbox" th:name="'seatDtoMCVList['+${i* seatWrapper.getColumn() + k}+'].seatId'" th:value="*{seatDtoMCVList[__${i * seatWrapper.getColumn() + k}__].seatId}" checked/>
+                                            <input hidden type="checkbox" th:name="'seatDtoMCVList['+${i* seatWrapper.getColumn() + k}+'].seatName'"
+                                                   th:value="*{seatDtoMCVList[__${i * seatWrapper.getColumn() + k}__].seatName}
+                                                   ? *{seatDtoMCVList[__${i * seatWrapper.getColumn() + k}__].seatName}
+                                                   : ${#conversions.convert((65+k), 'java.lang.Character')}+${i + 1}" checked/>
+                                            <input hidden type="checkbox" th:name="'seatDtoMCVList['+${i* seatWrapper.getColumn() + k}+'].roomId'" th:value="*{seatDtoMCVList[__${i *  seatWrapper.getColumn() + k}__].roomId}" checked/>
+                                        </div>
+                                    </div>
+                                    <button type="button" id="confirm" th:attr="onclick=|confirmAction(${seatWrapper.getSeatDtoMCVList()[0].seatId})|">submit</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--footers-->
+            <th:block th:insert="fragment/footers" />
+
+        </div>
+        <!-- main panel ends -->
+    </div>
+    <!-- page body wrapper ends -->
+</div>
+<!-- container scroller -->
+<script th:inline="javascript">
+
+let choose = 1;
+const chooseList = document.querySelectorAll('input[type=radio][name="choose"]');
+
+chooseList.forEach((choice) =>{
+    choice.addEventListener('change',()=>{
+        choose = choice.value;
+    })
+})
+
+const listButton = document.querySelectorAll('button');
+listButton.forEach((button)=>{
+    if (Number(button.value) === 1){
+        button.classList.add("normal");
+    }
+    else if (Number(button.value) === 2){
+        button.classList.add("vip");
+    }
+    else if (Number(button.value) === 3){
+        button.classList.add("way");
+    }
+    else if (Number(button.value) === 4){
+        button.classList.add("broken");
+    }
+    else if (Number(button.value) === 5){
+        button.classList.add("love");
+    }
+
+    button.addEventListener('click',(btn) =>{
+        btn.target.classList.remove('normal','vip','way','broken','love');
+        btn.target.value = choose;
+        document.getElementById(btn.target.name).value = choose;
+        if (Number(choose) === 1){
+            btn.target.classList.add("normal");
+        }
+        else if (Number(choose) === 2){
+            btn.target.classList.add("vip");
+        }
+        else if (Number(choose) === 3){
+            btn.target.classList.add("way");
+        }
+        else if (Number(choose) === 4){
+            btn.target.classList.add("broken");
+        }
+        else if (Number(choose) === 5){
+            btn.target.classList.add("love");
+        }
+    })
+})
+
+
+    function confirmAction(id){
+        const doc = document.getElementById("confirm");
+        doc.style.display = 'block';
+        doc.innerHTML =
+            `<div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 id="content-header" class="modal-title">Confirm add seats</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="displayNone()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="content-line" class="text-danger">Confirm add seats</p>
+                        <p><b>ARE YOU SURE ?</b></p>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Confirm</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="displayNone()">Close</button>
+                    </div>
+                </div>
+        </div>`
+        if (id === "null"){
+            document.getElementById("content-header").innerText= "Confirm add new room"
+            document.getElementById("content-line").innerText= "Confirm add new room"
+        }
+    }
+    function displayNone(){
+        const doc = document.getElementById("confirm");
+        doc.style.display= 'none';
+    }</script>
+
+
+</body>
+
+</html>
