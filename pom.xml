@@ -114,12 +114,6 @@
             <artifactId>spring-boot-maven-plugin</artifactId>
             <version>3.0.6</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.github.eirslett/frontend-maven-plugin -->
-        <dependency>
-            <groupId>com.github.eirslett</groupId>
-            <artifactId>frontend-maven-plugin</artifactId>
-            <version>1.12.1</version>
-        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.webjars/webjars-locator-core -->
         <dependency>
