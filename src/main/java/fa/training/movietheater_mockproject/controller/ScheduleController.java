@@ -3,7 +3,6 @@ package fa.training.movietheater_mockproject.controller;
 import fa.training.movietheater_mockproject.enums.AppConstant;
 import fa.training.movietheater_mockproject.exception.NotAcceptable;
 import fa.training.movietheater_mockproject.exception.ResourceNotFound;
-import fa.training.movietheater_mockproject.model.dto.MovieWithFormatDto;
 import fa.training.movietheater_mockproject.model.dto.PagingMovieWithFormat;
 import fa.training.movietheater_mockproject.model.dto.ScheduleDto;
 import fa.training.movietheater_mockproject.model.dto.ScheduleWrapper;
@@ -123,15 +122,10 @@ public class ScheduleController {
         List<ScheduleDto> scheduleDtos = schedules.stream().map(s ->{
             ScheduleDto scheduleDto = new ScheduleDto();
             BeanUtils.copyProperties(s,scheduleDto);
-            scheduleDto.setDuration(s.getMovieMovieFormat().getMovie().getDuration());
+            scheduleDto.setMovie(movieService.findByMovieMovieFormatId(s.getMovieMovieFormat().getMovieMovieFormatId()).get());
             scheduleDto.setMovieFormatId(s.getMovieMovieFormat().getMovieFormat().getMovieFormatId());
             scheduleDto.setMovieId(s.getMovieMovieFormat().getMovie().getMovieId());
-            scheduleDto.setMovieName(s.getMovieMovieFormat().getMovie().getMovieName());
-            scheduleDto.setImageSmallUrl(s.getMovieMovieFormat().getMovie().getImageSmallUrl());
-            List<MovieFormat> movieFormats = movieFormatService.findByMovieId(s.getMovieMovieFormat().getMovie().getMovieId());
-            List<Category> categories = categoryService.findByMovieId(s.getMovieMovieFormat().getMovie().getMovieId());
-            scheduleDto.setMovieFormats(movieFormats);
-            scheduleDto.setCategories(categories);
+
             Optional<Bill> billOpt = billService.findFirstBill(s);
             if(billOpt.isPresent()){
                 scheduleDto.setStatusEdit(null);
@@ -216,18 +210,8 @@ public class ScheduleController {
 
         Page<Movie> moviePage = movieService.getAll(undelete,page);
 
-        List<MovieWithFormatDto> movieWithFormatDtos = moviePage.toList().stream().map(m -> {
-            MovieWithFormatDto movieWithFormatDto = new MovieWithFormatDto();
-            BeanUtils.copyProperties(m, movieWithFormatDto);
-            List<MovieFormat> movieFormats = m.getMovieMovieFormats().stream().map(MovieMovieFormat::getMovieFormat).collect(Collectors.toList());
-            List<Category> categories = m.getMovieCategories().stream().map(MovieCategory::getCategory).collect(Collectors.toList());
-            movieWithFormatDto.setMovieFormats(movieFormats);
-            movieWithFormatDto.setCategories(categories);
-            return movieWithFormatDto;
-        }).collect(Collectors.toList());
-
         PagingMovieWithFormat pageMovie = new PagingMovieWithFormat();
-        pageMovie.setMovieWithFormatDtos(movieWithFormatDtos);
+        pageMovie.setMovieWithFormatDtos(moviePage.toList());
         pageMovie.setPageNumber(pageNumber);
         pageMovie.setTotalPage(moviePage.getTotalPages());
         pageMovie.setSize(size);
@@ -280,18 +264,8 @@ public class ScheduleController {
 
         Page<Movie> moviePage = movieService.getAll(undelete,page);
 
-        List<MovieWithFormatDto> movieWithFormatDtos = moviePage.toList().stream().map(m -> {
-            MovieWithFormatDto movieWithFormatDto = new MovieWithFormatDto();
-            BeanUtils.copyProperties(m, movieWithFormatDto);
-            List<MovieFormat> movieFormats = m.getMovieMovieFormats().stream().map(MovieMovieFormat::getMovieFormat).collect(Collectors.toList());
-            List<Category> categories = m.getMovieCategories().stream().map(MovieCategory::getCategory).collect(Collectors.toList());
-            movieWithFormatDto.setMovieFormats(movieFormats);
-            movieWithFormatDto.setCategories(categories);
-            return movieWithFormatDto;
-        }).collect(Collectors.toList());
-
         PagingMovieWithFormat pageMovie = new PagingMovieWithFormat();
-        pageMovie.setMovieWithFormatDtos(movieWithFormatDtos);
+        pageMovie.setMovieWithFormatDtos(moviePage.toList());
         pageMovie.setTotalPage(moviePage.getTotalPages());
         pageMovie.setPageNumber(pageNumber);
         pageMovie.setSize(size);
@@ -309,7 +283,7 @@ public class ScheduleController {
 //            return movieWithFormatDto;
 //        }).collect(Collectors.toList());
 
-        model.addAttribute("movieWithFormatDtos", movieWithFormatDtos);
+        model.addAttribute("movieWithFormatDtos", moviePage.toList());
         model.addAttribute("pageNumber", pageNumber);
         model.addAttribute("totalPage", moviePage.getTotalPages());
         model.addAttribute("size", size);
@@ -322,22 +296,16 @@ public class ScheduleController {
         List<ScheduleDto> scheduleDtos = schedules.stream().map(s ->{
             ScheduleDto scheduleDto = new ScheduleDto();
             BeanUtils.copyProperties(s,scheduleDto);
-            scheduleDto.setDuration(s.getMovieMovieFormat().getMovie().getDuration());
+            scheduleDto.setMovie(movieService.findByMovieMovieFormatId(s.getMovieMovieFormat().getMovieMovieFormatId()).get());
             scheduleDto.setMovieFormatId(s.getMovieMovieFormat().getMovieFormat().getMovieFormatId());
             scheduleDto.setMovieId(s.getMovieMovieFormat().getMovie().getMovieId());
-            scheduleDto.setMovieName(s.getMovieMovieFormat().getMovie().getMovieName());
-            scheduleDto.setImageSmallUrl(s.getMovieMovieFormat().getMovie().getImageSmallUrl());
-            List<MovieFormat> movieFormats = movieFormatService.findByMovieId(s.getMovieMovieFormat().getMovie().getMovieId());
-            List<Category> categories = categoryService.findByMovieId(s.getMovieMovieFormat().getMovie().getMovieId());
-            scheduleDto.setMovieFormats(movieFormats);
-            scheduleDto.setCategories(categories);
+
             Optional<Bill> billOpt = billService.findFirstBill(s);
             if(billOpt.isPresent()){
                 scheduleDto.setStatusEdit(null);
             }
             return scheduleDto;
         }).collect(Collectors.toList());
-
 
         scheduleWrapper.setDate(date);
         scheduleWrapper.setCinemaName(room.get().getCinema().getCinemaName());
@@ -385,13 +353,9 @@ public class ScheduleController {
                 .map(s->{
                     ScheduleDto scheduleDto = new ScheduleDto();
                     BeanUtils.copyProperties(s,scheduleDto);
-                    scheduleDto.setMovieFormatId(s.getMovieMovieFormat().getMovieFormat().getMovieFormatId());
-                    scheduleDto.setMovieId(s.getMovieMovieFormat().getMovie().getMovieId());
-                    scheduleDto.setMovieName(s.getMovieMovieFormat().getMovie().getMovieName());
-                    scheduleDto.setImageSmallUrl(s.getMovieMovieFormat().getMovie().getImageSmallUrl());
-                    List<MovieFormat> movieFormats = movieFormatService.findByMovieId(s.getMovieMovieFormat().getMovie().getMovieId());
-                    scheduleDto.setMovieFormats(movieFormats);
 
+                    scheduleDto.setMovieId(s.getMovieMovieFormat().getMovie().getMovieId());
+                    scheduleDto.setMovie(movieService.findByMovieMovieFormatId(s.getMovieMovieFormat().getMovieMovieFormatId()).get());
                     Optional<Bill> billOpt = billService.findFirstBill(s);
                     if(billOpt.isPresent()){
                         scheduleDto.setStatusEdit(null);
@@ -465,6 +429,7 @@ public class ScheduleController {
             schedule.setDateType(dateType.get());
             schedule.setDate(scheduleWrapper.getDate());
                 scheduleService.createNew(schedule);
+
 //            check data from client
                 System.out.println("loop " + (++i) + ": ");
                 System.out.println("date type is: "+dateType.get().getDateName());

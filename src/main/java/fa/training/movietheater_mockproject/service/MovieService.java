@@ -30,4 +30,6 @@ public interface MovieService extends BaseService<Movie,Long>{
 
     Specification<Movie> specSearch(String keyword, String filter);
 
+    Optional<Movie> findByMovieMovieFormatId(Long movieMovieFormatId);
+
 }

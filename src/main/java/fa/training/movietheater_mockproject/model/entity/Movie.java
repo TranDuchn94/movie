@@ -61,9 +61,9 @@ public class Movie extends BaseEntity{
 //    @OneToMany(mappedBy = "movie")
 //    private Set<Schedule> schedules;
 
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", fetch = FetchType.EAGER)
     private Set<MovieCategory> movieCategories;
 
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", fetch = FetchType.EAGER)
     private Set<MovieMovieFormat> movieMovieFormats;
 }

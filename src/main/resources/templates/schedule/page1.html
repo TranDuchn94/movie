@@ -90,11 +90,11 @@
                                                     <div class="d-flex"><p style="width: 35%">Duration:&nbsp;</p><p th:text="${m.getDuration()}"></p></div>
                                                     <div class="d-flex flex-wrap">
                                                         <p style="width: 35%">Format:&nbsp</p>
-                                                        <p th:each="f : ${m.getMovieFormats()}" th:text="${f.getMovieFormatName()+'&nbsp;'}"></p>
+                                                        <p th:each="f : ${m.movieMovieFormats}" th:text="${f.movieFormat.movieFormatName+'&nbsp;'}"></p>
                                                     </div>
                                                     <div class="d-flex flex-wrap">
                                                         <p style="width: 35%">Category:&nbsp;</p>
-                                                        <p th:each="f : ${m.getCategories()}" th:text="${f.getCategoryName()+'&nbsp;'}"></p>
+                                                        <p th:each="f : ${m.movieCategories}" th:text="${f.category.categoryName+'&nbsp;'}"></p>
                                                     </div>
                                                     <div class="d-flex"><p style="width: 35%">Early date:&nbsp;</p><p th:text="${m.getStartDate()}"></p></div>
                                                 </div>
@@ -158,14 +158,14 @@
                                                             </p>
                                                         </div>
 
-                                                        <img  style="max-height: 120px; object-fit: cover" class="card-img-top" th:src="@{${s.getImageSmallUrl() != null ? '/files/' + s.getImageSmallUrl() : ''}}" alt="image film">
+                                                        <img  style="max-height: 120px; object-fit: cover" class="card-img-top" th:src="@{${s.movie.imageSmallUrl != null ? '/files/' + s.movie.imageSmallUrl : ''}}" alt="image film">
 
-                                                        <input type="number" hidden readonly th:name="|scheduleDtos[${i.index}].movieId|" th:value="${s.getMovieId()}" />
-                                                        <input type="number" hidden readonly th:name="|scheduleDtos[${i.index}].scheduleId|" th:value="${s.getScheduleId()}"/>
+                                                        <input type="number" hidden readonly th:name="|scheduleDtos[${i.index}].movieId|" th:value="${s.movieId}" />
+                                                        <input type="number" hidden readonly th:name="|scheduleDtos[${i.index}].scheduleId|" th:value="${s.scheduleId}"/>
                                                         <div class="d-flex mt-2">
-                                                            <p style="width: 38%">Movie name: </p><p th:text="${s.getMovieName()}">
+                                                            <p style="width: 38%">Movie name: </p><p th:text="${s.movie.movieName}">
                                                         </div>
-                                                        <div class="d-flex"><p style="width: 38%">Duration: </p><p th:text="${s.getDuration()}"></p></div>
+                                                        <div class="d-flex"><p style="width: 38%">Duration: </p><p th:text="${s.movie.movieName}"></p></div>
                                                         <div class="d-flex mb-2">
                                                             <p style="width: 38%">start at: </p>
                                                             <input type="time" th:readonly="${s.statusEdit != 'AVAILABLE EDIT'}"
@@ -177,13 +177,13 @@
                                                                    th:name="|scheduleDtos[${i.index}].endAt|" th:value="${s.getEndAt()}">
                                                         </div>
                                                         <div class="d-flex flex-wrap">
-                                                            <p style="width: 38%">Category: </p><p th:each="k : ${s.getCategories()}" th:text="${k.getCategoryName()+'&nbsp;'}"></p>
+                                                            <p style="width: 38%">Category: </p><p th:each="k : ${s.movie.movieCategories}" th:text="${k.category.categoryName+'&nbsp;'}"></p>
                                                         </div>
                                                         <div class="d-flex flex-wrap"><p style="width: 38%">Format: </p>
                                                             <select th:name="|scheduleDtos[${i.index}].movieFormatId|">
-                                                                <option th:each="f : ${s.getMovieFormats()}" th:value="${f.getMovieFormatId()}" th:text="${f.getMovieFormatName()}"
-                                                                        th:selected="${s.getMovieFormatId() == f.getMovieFormatId()}"
-                                                                        th:disabled="${s.statusEdit != 'AVAILABLE EDIT' && s.getMovieFormatId() != f.getMovieFormatId()}"></option>
+                                                                <option th:each="f : ${s.movie.movieMovieFormats}" th:value="${f.movieFormat.movieFormatId}" th:text="${f.movieFormat.movieFormatName}"
+                                                                        th:selected="${s.movieFormatId == f.movieFormat.movieFormatId}"
+                                                                        th:disabled="${s.statusEdit != 'AVAILABLE EDIT' && s.movieFormatId != f.movieFormat.movieFormatId}"></option>
                                                             </select></div>
                                                         <div class="d-flex mt-2">
                                                             <button class="btn btn-danger" style="color: white" th:if="${s.getStatusEdit() =='AVAILABLE EDIT'}" type="button" th:attr="onclick=|confirmRemove(${i.index},${s.getScheduleId()})|">Delete</button>
@@ -350,16 +350,16 @@
                         </div>
                      </div>
                 `
-            if(arr[i].movieFormats){
-                for (let k = 0; k < arr[i].movieFormats.length; k++){
+            if(arr[i].movieMovieFormats){
+                for (let k = 0; k < arr[i].movieMovieFormats.length; k++){
                     document.getElementById(`movieFormat${i}`).innerHTML +=
-                        `<p>${arr[i].movieFormats[k].movieFormatName}&nbsp;</p>`
+                        `<p>${arr[i].movieMovieFormats[k].movieFormat.movieFormatName}&nbsp;</p>`
                 }
             }
-            if(arr[i].categories){
-                for (let k = 0; k < arr[i].categories.length; k++){
+            if(arr[i].movieCategories){
+                for (let k = 0; k < arr[i].movieCategories.length; k++){
                     document.getElementById(`categories${i}`).innerHTML +=
-                        `<p>${arr[i].categories[k].categoryName}&nbsp;</p>`
+                        `<p>${arr[i].movieCategories[k].category.categoryName}&nbsp;</p>`
                 }
             }
         }
@@ -408,22 +408,16 @@
     }
     function addToSchedule(index){
 
-        const scheduleDto ={
-            scheduleId : "",
-            movieId : listMovieDtos[index].movieId,
-            movieName : listMovieDtos[index].movieName,
-            duration: listMovieDtos[index].duration,
-            movieFormatId : "",
-            imageSmallUrl : listMovieDtos[index].imageSmallUrl,
-            movieFormats : listMovieDtos[index].movieFormats,
-            categories : listMovieDtos[index].categories,
-            startAt : "",
-            endAt : "",
-            statusEdit : 'AVAILABLE EDIT',
-            conflict : ""
-        }
+        listScheduleDtos.push({movie : listMovieDtos[index]});
+        let indexOf = listScheduleDtos.length - 1;
+        listScheduleDtos[indexOf].movieId = listMovieDtos[index].movieId;
+        listScheduleDtos[indexOf].scheduleId = "";
+        listScheduleDtos[indexOf].movieFormatId = "";
+        listScheduleDtos[indexOf].startAt = "";
+        listScheduleDtos[indexOf].endAt = "";
+        listScheduleDtos[indexOf].statusEdit = "AVAILABLE EDIT";
+        listScheduleDtos[indexOf].conflict = "";
 
-        listScheduleDtos.push(scheduleDto);
         display(listScheduleDtos);
 
         $("#submitSchedule").prop("disabled", true);
@@ -455,14 +449,14 @@
                     <div class="card border p-2">
                         <div class="mx-auto" id="available${i}">  </div>
 
-                            <img class="card-img-top"  style="max-height: 120px; object-fit: cover" src="${contextPath}files/${arr[i].imageSmallUrl}" alt="image film">
+                            <img class="card-img-top"  style="max-height: 120px; object-fit: cover" src="${contextPath}files/${arr[i].movie.imageSmallUrl}" alt="image film">
                             <input type="number" hidden readOnly name="scheduleDtos[${i}].movieId" value="${arr[i].movieId}"/>
                             <input type="number" hidden readOnly name="scheduleDtos[${i}].scheduleId" value="${arr[i].scheduleId}"/>
                             <div class="d-flex mt-2">
-                                <p style="width: 38%">Movie name:</p><p>${arr[i].movieName}</p>
+                                <p style="width: 38%">Movie name:</p><p>${arr[i].movie.movieName}</p>
                             </div>
                             <div class="d-flex">
-                                <p style="width: 38%">Duration:</p><p>${arr[i].duration}</p>
+                                <p style="width: 38%">Duration:</p><p>${arr[i].movie.duration}</p>
                             </div>
                             <div id="startAt${i}" class="mb-2 d-flex">
                                 <p style="width: 38%">Start at:&nbsp;</p>
@@ -498,34 +492,34 @@
                     <input id="scheduleDtos[${i}].endAt" class="timeInput" type="time" readonly name="scheduleDtos[${i}].endAt" value="${arr[i].endAt.substring(0,5)}">
                         `
             }
-            if(arr[i].categories){
-                for(let k = 0; k < arr[i].categories.length; k++){
+            if(arr[i].movie.movieCategories){
+                for(let k = 0; k < arr[i].movie.movieCategories.length; k++){
                     document.getElementById(`category${i}`).innerHTML +=
-                        `<p>${arr[i].categories[k].categoryName}&nbsp;</p>`
+                        `<p>${arr[i].movie.movieCategories[k].category.categoryName}&nbsp;</p>`
                 }
             }
 
             const availableEdit = arr[i].statusEdit;
             // loop to display option in select tag
-            if(arr[i].movieFormats){
-                for (let j = 0; j < arr[i].movieFormats.length; j++) {
+            if(arr[i].movie.movieMovieFormats){
+                for (let j = 0; j < arr[i].movie.movieMovieFormats.length; j++) {
 
-                    if (arr[i].movieFormatId === arr[i].movieFormats[j].movieFormatId){
+                    if (arr[i].movieFormatId === arr[i].movie.movieMovieFormats[j].movieFormat.movieFormatId){
                         document.getElementById(`select-movieFormat${i}`).innerHTML +=
-                            `<option selected value="${arr[i].movieFormats[j].movieFormatId}">
-                        ${arr[i].movieFormats[j].movieFormatName}
+                            `<option selected value="${arr[i].movie.movieMovieFormats[j].movieFormat.movieFormatId}">
+                        ${arr[i].movie.movieMovieFormats[j].movieFormat.movieFormatName}
                      </option>`
                     }
                     else if (arr[i].statusEdit === 'AVAILABLE EDIT'){
                         document.getElementById(`select-movieFormat${i}`).innerHTML +=
-                            `<option value="${arr[i].movieFormats[j].movieFormatId}">
-                        ${arr[i].movieFormats[j].movieFormatName}
+                            `<option value="${arr[i].movie.movieMovieFormats[j].movieFormat.movieFormatId}">
+                        ${arr[i].movie.movieMovieFormats[j].movieFormat.movieFormatName}
                      </option>`
                     }
                     else {
                         document.getElementById(`select-movieFormat${i}`).innerHTML +=
-                            `<option disabled value="${arr[i].movieFormats[j].movieFormatId}">
-                        ${arr[i].movieFormats[j].movieFormatName}
+                            `<option disabled value="${arr[i].movie.movieMovieFormats[j].movieFormat.movieFormatId}">
+                        ${arr[i].movie.movieMovieFormats[j].movieFormat.movieFormatName}
                     </option>`
                     }
                 }
@@ -630,7 +624,7 @@
         listScheduleDtos[indexId].startAt = value;
 
         let endTimes = Number(document.getElementById(`scheduleDtos[${indexId}].startAt`).value.substring(0,2))*60
-            + Number(document.getElementById(`scheduleDtos[${indexId}].startAt`).value.substring(3,5))+listScheduleDtos[indexId].duration;
+            + Number(document.getElementById(`scheduleDtos[${indexId}].startAt`).value.substring(3,5))+listScheduleDtos[indexId].movie.duration;
         let hourEnd = Math.floor(endTimes/60);
         let minuteEnd = endTimes % 60;
         let stringHourEnd = "";
@@ -664,7 +658,7 @@
         listScheduleDtos[indexId].endAt = value;
 
         let starTimes = Number(document.getElementById(`scheduleDtos[${indexId}].endAt`).value.substring(0,2))*60
-            + Number(document.getElementById(`scheduleDtos[${indexId}].endAt`).value.substring(3,5)) - listScheduleDtos[indexId].duration;
+            + Number(document.getElementById(`scheduleDtos[${indexId}].endAt`).value.substring(3,5)) - listScheduleDtos[indexId].movie.duration;
         let hourEnd = Math.floor(starTimes/60);
         let minuteEnd = starTimes % 60;
         let stringHourEnd = "";
@@ -928,7 +922,7 @@
 
     function confirmReset(){
         const doc = document.getElementById("confirmResetSchedule");
-        $('messageTimeError').empty();
+        $('#messageTimeError').empty();
         doc.style.display= 'block';
         doc.innerHTML=
             `<div class="modal-dialog" role="document ">

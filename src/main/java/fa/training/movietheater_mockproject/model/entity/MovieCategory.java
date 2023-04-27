@@ -1,5 +1,6 @@
 package fa.training.movietheater_mockproject.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ public class MovieCategory {
     private Long movieCategoryId;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "movie_id")
     private Movie movie;
 

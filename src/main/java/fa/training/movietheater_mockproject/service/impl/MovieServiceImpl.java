@@ -189,4 +189,9 @@ public class MovieServiceImpl implements MovieService {
         }
         return specUndelete;
     }
+
+    @Override
+    public Optional<Movie> findByMovieMovieFormatId(Long movieMovieFormatId) {
+        return movieRepository.findByMovieMovieFormatId(movieMovieFormatId);
+    }
 }

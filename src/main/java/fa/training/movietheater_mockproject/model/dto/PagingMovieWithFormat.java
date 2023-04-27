@@ -1,5 +1,6 @@
 package fa.training.movietheater_mockproject.model.dto;
 
+import fa.training.movietheater_mockproject.model.entity.Movie;
 import lombok.Data;
 
 import java.util.List;
@@ -11,5 +12,5 @@ public class PagingMovieWithFormat {
     private Integer totalPage;
     private String Keyword;
     private String sort;
-    private List<MovieWithFormatDto> movieWithFormatDtos;
+    private List<Movie> movieWithFormatDtos;
 }

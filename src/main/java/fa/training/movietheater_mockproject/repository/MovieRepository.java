@@ -1,7 +1,10 @@
 package fa.training.movietheater_mockproject.repository;
 
 import fa.training.movietheater_mockproject.model.entity.Movie;
+import fa.training.movietheater_mockproject.model.entity.MovieFormat;
+import fa.training.movietheater_mockproject.model.entity.MovieMovieFormat;
 import fa.training.movietheater_mockproject.repository.custom.CustomizeBookingRepository;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -32,4 +35,9 @@ public interface MovieRepository extends PagingAndSortingRepository<Movie, Long>
             "WHERE r.cinema_id = ?1 AND m.deleted = 0 " ,
             nativeQuery = true)
     List<Movie> findAllByCinemaId(Long id);
+
+    @Query(value = "SELECT m FROM Movie m" +
+            " JOIN m.movieMovieFormats mm" +
+            " WHERE mm.movieMovieFormatId = ?1")
+   Optional<Movie> findByMovieMovieFormatId(Long movieMovieFormatId);
 }
