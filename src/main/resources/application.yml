@@ -1,14 +1,14 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/movie_theater_mock_project?createDatabaseIfNotExist=true
-    username: root
-    password: 123456
+    url: jdbc:mysql://tranducsql.mysql.database.azure.com/movie_theater_mock_project?createDatabaseIfNotExist=true
+    username: tranduc
+    password: Minhduc12121994
   jpa:
     show-sql: true
     hibernate:
       ddl-auto: update
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    database-platform: org.hibernate.dialect.MySQLDialect
   servlet:
     multipart:
       max-file-size: 20MB
